@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  telegramId      BigInt           @unique
+  username        String?
+  firstName       String?
+  lastName        String?
+  role            String           @default("USER")
+  subscription    Subscription?
+  caseSubmissions CaseSubmission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status               String             @default("INACTIVE")
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  expiresAt            DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+}
+
+model Content {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  type        String
+  url         String?
+  scheduledFor DateTime?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model CaseSubmission {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  igHandle         String
+  currentSituation String
+  inquiry          String
+  status           String           @default("PENDING")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model PartnerPerk {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  discountCode String?
+  url          String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
