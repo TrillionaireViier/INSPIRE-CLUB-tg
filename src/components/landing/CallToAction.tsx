@@ -27,7 +27,7 @@ export function CallToAction() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
-              href="https://t.me/your_bot_username" // TODO: Replace with real bot username
+              href="https://t.me/Aviva_Agency_WebsiteLeadsbot"
               className="group flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-bold text-black shadow-sm hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors w-full sm:w-auto"
             >
               <MessageCircle className="w-5 h-5 text-fuchsia-600" />
