@@ -14,14 +14,14 @@ export default function LoginPage() {
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
             <ShieldAlert className="text-indigo-600 w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Login</h1>
-          <p className="text-slate-500 mt-2 text-sm text-center">Please enter the administrator password to continue.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Вхід в адмін-панель</h1>
+          <p className="text-slate-500 mt-2 text-sm text-center">Будь ласка, введіть пароль адміністратора для продовження.</p>
         </div>
 
         <form action={formAction} className="space-y-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-              Password
+              Пароль
             </label>
             <input
               type="password"
@@ -44,7 +44,7 @@ export default function LoginPage() {
             disabled={isPending}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-3 rounded-lg text-sm transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isPending ? 'Authenticating...' : 'Sign In'}
+            {isPending ? 'Авторизація...' : 'Увійти'}
           </button>
         </form>
       </div>

@@ -19,7 +19,7 @@ export async function login(prevState: any, formData: FormData) {
     redirect('/admin')
   }
   
-  return { error: 'Invalid password' }
+  return { error: 'Невірний пароль' }
 }
 
 export async function logout() {
