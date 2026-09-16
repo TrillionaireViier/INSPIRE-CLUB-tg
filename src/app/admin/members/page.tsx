@@ -13,8 +13,8 @@ export default async function MembersPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Members & Subs</h1>
-          <p className="text-slate-500 mt-1">Manage users and their subscription statuses.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Учасники та підписки</h1>
+          <p className="text-slate-500 mt-1">Управління користувачами та статусами їхніх підписок.</p>
         </div>
       </div>
 

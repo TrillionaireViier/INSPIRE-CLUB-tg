@@ -14,8 +14,8 @@ export default async function PerksPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Partner Perks</h1>
-          <p className="text-slate-500 mt-1">Manage software discounts and partner offers for members.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Бонуси від партнерів</h1>
+          <p className="text-slate-500 mt-1">Керуйте знижками на ПЗ та пропозиціями партнерів для учасників.</p>
         </div>
       </div>
 

@@ -18,8 +18,8 @@ export default async function ContentLibraryPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Content Library</h1>
-          <p className="text-slate-500 mt-1">Manage past masterclasses, recordings, and PDF materials.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Бібліотека контенту</h1>
+          <p className="text-slate-500 mt-1">Керуйте минулими майстер-класами, записами та PDF-матеріалами.</p>
         </div>
       </div>
 

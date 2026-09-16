@@ -15,12 +15,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <NavItem href="/admin" icon={<LayoutDashboard size={20} />} label="Dashboard" />
-          <NavItem href="/admin/members" icon={<Users size={20} />} label="Members & Subs" />
-          <NavItem href="/admin/schedule" icon={<Calendar size={20} />} label="Live Schedule" />
-          <NavItem href="/admin/content" icon={<Video size={20} />} label="Content Library" />
-          <NavItem href="/admin/cases" icon={<ShieldCheck size={20} />} label="Case Club Apps" />
-          <NavItem href="/admin/perks" icon={<CreditCard size={20} />} label="Partner Perks" />
+          <NavItem href="/admin" icon={<LayoutDashboard size={20} />} label="Головна панель" />
+          <NavItem href="/admin/members" icon={<Users size={20} />} label="Учасники та підписки" />
+          <NavItem href="/admin/schedule" icon={<Calendar size={20} />} label="Розклад трансляцій" />
+          <NavItem href="/admin/content" icon={<Video size={20} />} label="Бібліотека контенту" />
+          <NavItem href="/admin/cases" icon={<ShieldCheck size={20} />} label="Заявки на розбір" />
+          <NavItem href="/admin/perks" icon={<CreditCard size={20} />} label="Бонуси від партнерів" />
         </nav>
       </aside>
 
@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-600">Admin User</span>
+              <span className="text-sm font-medium text-slate-600">Адміністратор</span>
               <div className="w-8 h-8 rounded-full bg-slate-200"></div>
             </div>
             <form action={logout}>
