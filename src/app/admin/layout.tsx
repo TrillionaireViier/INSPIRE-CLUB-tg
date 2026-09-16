@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, Calendar, Video, ShieldCheck, CreditCard, Menu } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, Video, ShieldCheck, CreditCard, Menu, LogOut } from "lucide-react";
+import { logout } from "./login/actions";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -29,9 +30,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button className="md:hidden text-slate-500">
             <Menu size={24} />
           </button>
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-600">Admin User</span>
-            <div className="w-8 h-8 rounded-full bg-slate-200"></div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-slate-600">Admin User</span>
+              <div className="w-8 h-8 rounded-full bg-slate-200"></div>
+            </div>
+            <form action={logout}>
+              <button className="text-slate-500 hover:text-rose-600 transition-colors p-2 rounded-lg hover:bg-rose-50" title="Logout">
+                <LogOut size={20} />
+              </button>
+            </form>
           </div>
         </header>
         <div className="p-6 md:p-8 flex-1 overflow-y-auto">
