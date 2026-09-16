@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 export function CallToAction() {
@@ -32,12 +32,6 @@ export function CallToAction() {
             >
               <MessageCircle className="w-5 h-5 text-fuchsia-600" />
               Connect via Telegram
-            </Link>
-            <Link
-              href="/admin"
-              className="group flex items-center justify-center gap-2 text-base font-semibold leading-6 text-white hover:text-fuchsia-400 transition-colors"
-            >
-              Log in to Dashboard <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>
