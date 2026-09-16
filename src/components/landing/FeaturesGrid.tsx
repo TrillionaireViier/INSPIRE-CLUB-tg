@@ -5,36 +5,36 @@ import { Video, FileText, Search, Tag } from "lucide-react";
 
 const features = [
   {
-    name: "Live Masterclasses",
+    name: "Живі майстер-класи",
     description:
-      "Join interactive video sessions with industry experts. Learn advanced strategies and ask questions in real-time.",
+      "Долучайтесь до інтерактивних відеосесій з експертами галузі. Вивчайте передові стратегії та ставте запитання в реальному часі.",
     icon: Video,
     color: "text-rose-400",
     bg: "bg-rose-400/10",
     border: "border-rose-400/20",
   },
   {
-    name: "Exclusive Resources",
+    name: "Ексклюзивні ресурси",
     description:
-      "Access a growing library of PDF guides, templates, and frameworks designed to accelerate your growth.",
+      "Отримайте доступ до бібліотеки PDF-посібників, шаблонів та фреймворків, створених для прискорення вашого зростання.",
     icon: FileText,
     color: "text-indigo-400",
     bg: "bg-indigo-400/10",
     border: "border-indigo-400/20",
   },
   {
-    name: "Case Studies",
+    name: "Персоналізовані розбори",
     description:
-      "Submit your Instagram handle or business for a personalized teardown. Learn from real-world examples.",
+      "Надішліть свій профіль Instagram або бізнес для персоналізованого розбору. Навчайтеся на реальних прикладах.",
     icon: Search,
     color: "text-emerald-400",
     bg: "bg-emerald-400/10",
     border: "border-emerald-400/20",
   },
   {
-    name: "Partner Perks",
+    name: "Бонуси від партнерів",
     description:
-      "Unlock exclusive discounts and offers from our curated list of tools and software partners.",
+      "Отримайте ексклюзивні знижки та пропозиції від нашого списку перевірених партнерів (сервіси та програмне забезпечення).",
     icon: Tag,
     color: "text-amber-400",
     bg: "bg-amber-400/10",
@@ -47,12 +47,12 @@ export function FeaturesGrid() {
     <div className="bg-black py-24 sm:py-32 relative z-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-fuchsia-400">Everything you need</h2>
+          <h2 className="text-base font-semibold leading-7 text-fuchsia-400">Все, що вам потрібно</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Everything you need to succeed
+            Все, що потрібно для успіху
           </p>
           <p className="mt-6 text-lg leading-8 text-zinc-400">
-            INSPIRE CLUB is more than just a community. It&apos;s a complete ecosystem built to give you the unfair advantage in your industry.
+            INSPIRE CLUB — це більше, ніж просто спільнота. Це повноцінна екосистема, створена для того, щоб надати вам перевагу у вашій ніші.
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">

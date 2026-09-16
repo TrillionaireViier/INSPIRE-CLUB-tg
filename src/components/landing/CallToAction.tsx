@@ -20,10 +20,10 @@ export function CallToAction() {
           className="mx-auto max-w-2xl text-center"
         >
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to scale your impact?
+            Готові масштабувати свій вплив?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-zinc-400">
-            Join the community of driven creators. Connect via our exclusive Telegram bot to get instant access to masterclasses, resources, and more.
+            Приєднуйтесь до спільноти цілеспрямованих творців. Підключіться через нашого ексклюзивного Telegram-бота, щоб миттєво отримати доступ до майстер-класів, ресурсів та багато іншого.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
@@ -31,7 +31,7 @@ export function CallToAction() {
               className="group flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-bold text-black shadow-sm hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors w-full sm:w-auto"
             >
               <MessageCircle className="w-5 h-5 text-fuchsia-600" />
-              Connect via Telegram
+              Підключитися через Telegram
             </Link>
           </div>
         </motion.div>
