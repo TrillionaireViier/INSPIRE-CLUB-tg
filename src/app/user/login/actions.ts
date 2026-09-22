@@ -9,14 +9,14 @@ export async function login(prevState: any, formData: FormData) {
   
   if (password === adminPassword) {
     const cookieStore = await cookies()
-    cookieStore.set('portal_session', 'authenticated', {
+    cookieStore.set('user_session', 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     })
     
-    redirect('/portal')
+    redirect('/user')
   }
   
   return { error: 'Невірний пароль' }
@@ -24,6 +24,6 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function logout() {
   const cookieStore = await cookies()
-  cookieStore.delete('portal_session')
-  redirect('/portal/login')
+  cookieStore.delete('user_session')
+  redirect('/user/login')
 }

@@ -15,12 +15,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <NavItem href="/portal" icon={<LayoutDashboard size={20} />} label="Головна панель" />
-          <NavItem href="/portal/members" icon={<Users size={20} />} label="Учасники та підписки" />
-          <NavItem href="/portal/schedule" icon={<Calendar size={20} />} label="Розклад трансляцій" />
-          <NavItem href="/portal/content" icon={<Video size={20} />} label="Бібліотека контенту" />
-          <NavItem href="/portal/cases" icon={<ShieldCheck size={20} />} label="Заявки на розбір" />
-          <NavItem href="/portal/perks" icon={<CreditCard size={20} />} label="Бонуси від партнерів" />
+          <NavItem href="/user" icon={<LayoutDashboard size={20} />} label="Головна панель" />
+          <NavItem href="/user/members" icon={<Users size={20} />} label="Учасники та підписки" />
+          <NavItem href="/user/schedule" icon={<Calendar size={20} />} label="Розклад трансляцій" />
+          <NavItem href="/user/content" icon={<Video size={20} />} label="Бібліотека контенту" />
+          <NavItem href="/user/cases" icon={<ShieldCheck size={20} />} label="Заявки на розбір" />
+          <NavItem href="/user/perks" icon={<CreditCard size={20} />} label="Бонуси від партнерів" />
         </nav>
       </aside>
 

@@ -26,5 +26,5 @@ export async function createLiveSession(formData: FormData) {
     }
   });
 
-  revalidatePath("/portal/schedule");
+  revalidatePath("/user/schedule");
 }

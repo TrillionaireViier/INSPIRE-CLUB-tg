@@ -8,5 +8,5 @@ export async function updateCaseStatus(id: string, status: string) {
     where: { id },
     data: { status }
   })
-  revalidatePath('/portal/cases')
+  revalidatePath('/user/cases')
 }

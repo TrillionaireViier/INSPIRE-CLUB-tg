@@ -23,5 +23,5 @@ export async function createContent(formData: FormData) {
     }
   });
 
-  revalidatePath("/portal/content");
+  revalidatePath("/user/content");
 }
