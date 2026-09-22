@@ -22,7 +22,7 @@ export async function deletePerk(id: string) {
   revalidatePath('/user/perks')
 }
 
-export async function togglePerkActive(id: string, isActive: boolean) {
+export async function togglePerk(id: string, isActive: boolean) {
   await prisma.partnerPerk.update({
     where: { id },
     data: { isActive }
