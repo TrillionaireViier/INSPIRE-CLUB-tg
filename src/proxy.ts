@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
+  const adminSession = request.cookies.get('admin_session')?.value;
+  const isLoginPage = request.nextUrl.pathname === '/admin/login';
+  
+  if (!isLoginPage && adminSession !== 'authenticated') {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+  
+  if (isLoginPage && adminSession === 'authenticated') {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+  
   return NextResponse.next();
 }
 
