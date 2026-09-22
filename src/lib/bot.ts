@@ -32,15 +32,26 @@ export const setupBot = (bot: Bot) => {
     }
 
     const keyboard = new InlineKeyboard()
-      .text("📅 Live Sessions", "live_sessions").row()
-      .text("📚 Content Library", "content_library").row()
-      .text("💎 Perks & Partners", "perks").row()
+      .text("📅 Живі ефіри", "live_sessions").row()
+      .text("📚 Бібліотека контенту", "content_library").row()
+      .text("💎 Партнери та знижки", "perks").row()
       .text("🎯 ПОДАТИ КЕЙС", "case_club").row()
-      .text("⚙️ My Subscription", "subscription");
+      .text("⚙️ Моя підписка", "subscription");
 
-    const welcomeText = `Welcome to INSPIRE CLUB! 🌟
+    const welcomeText = `Вітаємо в INSIDE CLUB by INSPIRE 🤍
 
-Ваш преміальний доступ до ексклюзивних майстер-класів, нетворкінгу та експертних розборів.
+Ти всередині простору, створеного для творців сфери краси.
+
+Тут ми зібрали знання, досвід, сильне оточення та можливості, які допомагають не просто ставати кращим у своїй професії , а рости у доході, масштабі та власному рівні.
+
+INSIDE - це місце, де можна знайти потрібних людей, отримати відповідь на свій запит, побачити нові точки росту, навчатися у сильних і бути частиною середовища, яке рухається вперед.
+
+Тут важливо не просто дивитися.
+Знайомся. Запитуй. Ділись. Використовуй можливості.
+
+Ти вже INSIDE.
+
+Твій професійний LEVEL ↑
 
 🍂 **INSIDE CLUB by Inspire — ЖОВТЕНЬ**
 
@@ -89,35 +100,35 @@ export const setupBot = (bot: Bot) => {
         orderBy: { scheduledFor: "asc" },
         take: 5
       });
-      if (sessions.length === 0) return ctx.reply("There are no upcoming live sessions scheduled yet.");
+      if (sessions.length === 0) return ctx.reply("Наразі немає запланованих живих ефірів.");
       
-      let message = "📅 **Upcoming Live Sessions**\n\n";
+      let message = "📅 **Заплановані ефіри**\n\n";
       for (const session of sessions) {
         const dateStr = session.scheduledFor ? format(session.scheduledFor, "MMM d, yyyy h:mm a") : "TBA";
         message += `🔹 *${session.title}*\n⏰ ${dateStr}\n`;
         if (session.description) message += `${session.description}\n`;
-        if (isSubscribed && session.url) message += `🔗 [Join Stream](${session.url})\n`;
-        else if (!isSubscribed) message += `🔒 *Stream link is hidden for non-subscribers*\n`;
+        if (isSubscribed && session.url) message += `🔗 [Приєднатись до трансляції](${session.url})\n`;
+        else if (!isSubscribed) message += `🔒 *Посилання на трансляцію приховано для непідписаних*\n`;
         message += "\n";
       }
       await ctx.reply(message, { parse_mode: "Markdown" });
     } 
     else if (data === "content_library") {
       await ctx.answerCallbackQuery();
-      if (!isSubscribed) return ctx.reply("📚 **Content Library**\n\n🔒 This section is locked. Please purchase a subscription.", { parse_mode: "Markdown" });
+      if (!isSubscribed) return ctx.reply("📚 **Бібліотека контенту**\n\n🔒 Цей розділ закрито. Будь ласка, придбайте підписку для доступу.", { parse_mode: "Markdown" });
       
       const content = await prisma.content.findMany({
         where: { type: { in: ["VIDEO_RECORDING", "PDF_MATERIAL"] }, isActive: true },
         orderBy: { createdAt: "desc" },
         take: 10
       });
-      if (content.length === 0) return ctx.reply("The library is currently empty.");
+      if (content.length === 0) return ctx.reply("Бібліотека наразі порожня.");
       
-      let message = "📚 **Content Library**\n\n";
+      let message = "📚 **Бібліотека контенту**\n\n";
       for (const item of content) {
         const icon = item.type === "VIDEO_RECORDING" ? "🎥" : "📄";
         message += `${icon} *${item.title}*\n`;
-        if (item.url) message += `🔗 [Access Material](${item.url})\n`;
+        if (item.url) message += `🔗 [Відкрити матеріал](${item.url})\n`;
         message += "\n";
       }
       await ctx.reply(message, { parse_mode: "Markdown" });
