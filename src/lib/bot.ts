@@ -115,7 +115,7 @@ INSIDE - це місце, де можна знайти потрібних люд
     } 
     else if (data === "content_library") {
       await ctx.answerCallbackQuery();
-      if (!isSubscribed) return ctx.reply("📚 **Бібліотека контенту**\n\n🔒 Цей розділ закрито. Будь ласка, придбайте підписку для доступу.", { parse_mode: "Markdown" });
+      if (!isSubscribed) return ctx.reply("📚 **Бібліотека контенту**\n\n🔒 Цей розділ закрито. Будь ласка, придбайте підписку, щоб розблокувати минулі майстер-класи та PDF-матеріали.", { parse_mode: "Markdown" });
       
       const content = await prisma.content.findMany({
         where: { type: { in: ["VIDEO_RECORDING", "PDF_MATERIAL"] }, isActive: true },
