@@ -3,6 +3,7 @@ import prisma from "./prisma";
 import { format } from "date-fns";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
+const ADMIN_ID = 569302636; // We'll need a way to notify admin. I will use a fallback or the first admin user. Actually, better to query the first user with role ADMIN.
 
 export const getBot = () => {
   if (!token) {
@@ -13,7 +14,6 @@ export const getBot = () => {
 
 export const setupBot = (bot: Bot) => {
   bot.command("start", async (ctx) => {
-    // Add user to database if they don't exist
     if (ctx.from) {
       await prisma.user.upsert({
         where: { telegramId: ctx.from.id },
@@ -35,27 +35,51 @@ export const setupBot = (bot: Bot) => {
       .text("📅 Live Sessions", "live_sessions").row()
       .text("📚 Content Library", "content_library").row()
       .text("💎 Perks & Partners", "perks").row()
-      .text("🎯 CASE CLUB Apply", "case_club").row()
+      .text("🎯 ПОДАТИ КЕЙС", "case_club").row()
       .text("⚙️ My Subscription", "subscription");
 
-    await ctx.reply(
-      "Welcome to INSPIRE CLUB! 🌟\n\n" +
-      "Your premium gateway to exclusive masterclasses, networking, and expert sessions.\n\n" +
-      "Use the menu below to navigate.",
-      { reply_markup: keyboard }
-    );
+    const welcomeText = `Welcome to INSPIRE CLUB! 🌟
+
+Ваш преміальний доступ до ексклюзивних майстер-класів, нетворкінгу та експертних розборів.
+
+🍂 **INSIDE CLUB by Inspire — ЖОВТЕНЬ**
+
+**06.10 | Катерина Ральник**
+КОМАНДА ЗАРОБЛЯЄ. А САЛОН?
+Як сформувати ставку, %, бонуси та KPI майстрів так, щоб мотивувати команду, але не залишати салон без прибутку.
+
+**13.10 | INSIDE РОЗБІР**
+ТВІЙ ЗАПИТ — НАШ РОЗБІР
+Живий розбір реальних запитів учасників клубу: бізнес, команда, клієнти, продажі, розвиток.
+
+**20.10 | INSIDE NETWORKING**
+ЗНАЙОМСТВА, ЯКІ МОЖУТЬ СТАТИ МОЖЛИВОСТЯМИ
+Жива зустріч комʼюніті: знайомимось, шукаємо партнерства.
+
+**27.10 | Юлія Паламар**
+ВІД АНАТОМІЇ ДО ФОРМИ
+Як будувати форму стрижки відповідно до анатомічних особливостей.
+
+---
+💻 **Урок по роботі в CRM Integrica**
+Показуємо не теорію, а реальні інструменти та функції, які справді допомагають у роботі салону (повернення клієнтів, аналітика, зарплати, розсилки, автоматизації).
+
+🎥 Дивитись урок: https://youtu.be/mMraBHIY_-Q?si=U8r2J82lxqocTdM4
+✨ Промокод «Ralnyk» на -50% оплати ліцензії
+
+Оберіть дію в меню нижче:`;
+
+    await ctx.reply(welcomeText, { reply_markup: keyboard, parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
   });
 
   bot.on("callback_query:data", async (ctx) => {
     const data = ctx.callbackQuery.data;
     const telegramId = ctx.from.id;
 
-    // Fetch user with subscription
     const user = await prisma.user.findUnique({
       where: { telegramId },
       include: { subscription: true }
     });
-
     const isSubscribed = user?.subscription?.status === "ACTIVE";
 
     if (data === "live_sessions") {
@@ -65,45 +89,30 @@ export const setupBot = (bot: Bot) => {
         orderBy: { scheduledFor: "asc" },
         take: 5
       });
-
-      if (sessions.length === 0) {
-        return ctx.reply("There are no upcoming live sessions scheduled yet.");
-      }
-
+      if (sessions.length === 0) return ctx.reply("There are no upcoming live sessions scheduled yet.");
+      
       let message = "📅 **Upcoming Live Sessions**\n\n";
       for (const session of sessions) {
         const dateStr = session.scheduledFor ? format(session.scheduledFor, "MMM d, yyyy h:mm a") : "TBA";
         message += `🔹 *${session.title}*\n⏰ ${dateStr}\n`;
         if (session.description) message += `${session.description}\n`;
-        
-        if (isSubscribed && session.url) {
-          message += `🔗 [Join Stream](${session.url})\n`;
-        } else if (!isSubscribed) {
-          message += `🔒 *Stream link is hidden for non-subscribers*\n`;
-        }
+        if (isSubscribed && session.url) message += `🔗 [Join Stream](${session.url})\n`;
+        else if (!isSubscribed) message += `🔒 *Stream link is hidden for non-subscribers*\n`;
         message += "\n";
       }
-
       await ctx.reply(message, { parse_mode: "Markdown" });
     } 
-    
     else if (data === "content_library") {
       await ctx.answerCallbackQuery();
+      if (!isSubscribed) return ctx.reply("📚 **Content Library**\n\n🔒 This section is locked. Please purchase a subscription.", { parse_mode: "Markdown" });
       
-      if (!isSubscribed) {
-        return ctx.reply("📚 **Content Library**\n\n🔒 This section is locked. Please purchase a subscription to unlock past masterclasses and PDFs.", { parse_mode: "Markdown" });
-      }
-
       const content = await prisma.content.findMany({
         where: { type: { in: ["VIDEO_RECORDING", "PDF_MATERIAL"] }, isActive: true },
         orderBy: { createdAt: "desc" },
         take: 10
       });
-
-      if (content.length === 0) {
-        return ctx.reply("The library is currently empty.");
-      }
-
+      if (content.length === 0) return ctx.reply("The library is currently empty.");
+      
       let message = "📚 **Content Library**\n\n";
       for (const item of content) {
         const icon = item.type === "VIDEO_RECORDING" ? "🎥" : "📄";
@@ -111,15 +120,179 @@ export const setupBot = (bot: Bot) => {
         if (item.url) message += `🔗 [Access Material](${item.url})\n`;
         message += "\n";
       }
-
       await ctx.reply(message, { parse_mode: "Markdown" });
+    }
+    // CASE CLUB FLOW
+    else if (data === "case_club") {
+      await ctx.answerCallbackQuery();
+      // Start session
+      await prisma.botSession.upsert({
+        where: { telegramId },
+        update: { state: "CASE_NAME", data: "{}" },
+        create: { telegramId, state: "CASE_NAME", data: "{}" }
+      });
+      await ctx.reply("Чудово! Давайте заповнимо анкету для CASE CLUB.\n\nВведіть ваше **Імʼя та прізвище:**", { parse_mode: "Markdown" });
+    }
+    else if (data.startsWith("prof_")) {
+      await ctx.answerCallbackQuery();
+      const session = await prisma.botSession.findUnique({ where: { telegramId } });
+      if (session?.state === "CASE_PROF") {
+        const profMap: Record<string, string> = {
+          "prof_master": "Майстер",
+          "prof_owner": "Власник салону",
+          "prof_manager": "Керівник",
+          "prof_brand": "Бренд",
+          "prof_other": "Інше"
+        };
+        const prof = profMap[data] || "Інше";
+        const sessionData = JSON.parse(session.data);
+        sessionData.profession = prof;
+        await prisma.botSession.update({
+          where: { telegramId },
+          data: { state: "CASE_DIR", data: JSON.stringify(sessionData) }
+        });
+        
+        const kb = new InlineKeyboard()
+          .text("Бізнес і гроші", "dir_business").row()
+          .text("Команда", "dir_team").row()
+          .text("Клієнти та продажі", "dir_sales").row()
+          .text("Маркетинг та ос. бренд", "dir_marketing").row()
+          .text("Професійний розвиток", "dir_dev").row()
+          .text("Інше", "dir_other");
+        await ctx.reply("Оберіть напрям запиту:", { reply_markup: kb });
+      }
+    }
+    else if (data.startsWith("dir_")) {
+      await ctx.answerCallbackQuery();
+      const session = await prisma.botSession.findUnique({ where: { telegramId } });
+      if (session?.state === "CASE_DIR") {
+        const dirMap: Record<string, string> = {
+          "dir_business": "Бізнес і гроші",
+          "dir_team": "Команда",
+          "dir_sales": "Клієнти та продажі",
+          "dir_marketing": "Маркетинг та особистий бренд",
+          "dir_dev": "Професійний розвиток",
+          "dir_other": "Інше"
+        };
+        const direction = dirMap[data] || "Інше";
+        const sessionData = JSON.parse(session.data);
+        sessionData.direction = direction;
+        await prisma.botSession.update({
+          where: { telegramId },
+          data: { state: "CASE_SITUATION", data: JSON.stringify(sessionData) }
+        });
+        await ctx.reply("Опишіть вашу ситуацію.\nЩо відбувається зараз і що саме хочете змінити?");
+      }
+    }
+    else if (data.startsWith("live_")) {
+      await ctx.answerCallbackQuery();
+      const session = await prisma.botSession.findUnique({ where: { telegramId } });
+      if (session?.state === "CASE_LIVE") {
+        const readyForLive = data === "live_yes";
+        const sessionData = JSON.parse(session.data);
+        
+        // Finalize
+        await prisma.caseSubmission.create({
+          // @ts-ignore - we know user exists if they got here
+          data: {
+            userId: user!.id,
+            name: sessionData.name,
+            profession: sessionData.profession,
+            direction: sessionData.direction,
+            currentSituation: sessionData.currentSituation,
+            previousAttempts: sessionData.previousAttempts,
+            mainQuestion: sessionData.mainQuestion,
+            igHandle: sessionData.igHandle,
+            readyForLive,
+          }
+        });
+        
+        await prisma.botSession.delete({ where: { telegramId } });
+        await ctx.reply("Твій кейс прийнято 🤍\nМи переглянемо всі заявки та оберемо кейси для наступного CASE CLUB. Якщо твій кейс буде обрано — ми повідомимо тебе окремо.");
+
+        // Notify Admin
+        const adminUser = await prisma.user.findFirst({ where: { role: "ADMIN" } });
+        if (adminUser) {
+          const adminMsg = `🔥 Нова заявка на CASE CLUB!\n\n` +
+            `Від: ${sessionData.name}\n` +
+            `Професія: ${sessionData.profession}\n` +
+            `Напрям: ${sessionData.direction}\n\n` +
+            `Ситуація: ${sessionData.currentSituation}\n\n` +
+            `Що пробували: ${sessionData.previousAttempts}\n\n` +
+            `Питання: ${sessionData.mainQuestion}\n\n` +
+            `Посилання: ${sessionData.igHandle}\n` +
+            `Готові наживо: ${readyForLive ? "Так" : "Ні"}`;
+          try {
+            await ctx.api.sendMessage(adminUser.telegramId.toString(), adminMsg);
+          } catch (e) {
+            console.error("Failed to notify admin", e);
+          }
+        }
+      }
+    }
+  });
+
+  bot.on("message:text", async (ctx) => {
+    const telegramId = ctx.from.id;
+    const session = await prisma.botSession.findUnique({ where: { telegramId } });
+    
+    if (!session) return; // ignore if no session
+    
+    const text = ctx.message.text;
+    const sessionData = JSON.parse(session.data);
+    
+    if (session.state === "CASE_NAME") {
+      sessionData.name = text;
+      await prisma.botSession.update({
+        where: { telegramId },
+        data: { state: "CASE_PROF", data: JSON.stringify(sessionData) }
+      });
+      const kb = new InlineKeyboard()
+        .text("Майстер", "prof_master").row()
+        .text("Власник салону", "prof_owner").row()
+        .text("Керівник", "prof_manager").row()
+        .text("Бренд", "prof_brand").row()
+        .text("Інше", "prof_other");
+      await ctx.reply("Чим ви займаєтесь?", { reply_markup: kb });
+    }
+    else if (session.state === "CASE_SITUATION") {
+      sessionData.currentSituation = text;
+      await prisma.botSession.update({
+        where: { telegramId },
+        data: { state: "CASE_ATTEMPTS", data: JSON.stringify(sessionData) }
+      });
+      await ctx.reply("Що ви вже пробували робити для вирішення цієї ситуації? Який отримали результат?");
+    }
+    else if (session.state === "CASE_ATTEMPTS") {
+      sessionData.previousAttempts = text;
+      await prisma.botSession.update({
+        where: { telegramId },
+        data: { state: "CASE_QUESTION", data: JSON.stringify(sessionData) }
+      });
+      await ctx.reply("Сформулюйте одне головне питання, яке хочете розібрати на CASE CLUB.");
+    }
+    else if (session.state === "CASE_QUESTION") {
+      sessionData.mainQuestion = text;
+      await prisma.botSession.update({
+        where: { telegramId },
+        data: { state: "CASE_IG", data: JSON.stringify(sessionData) }
+      });
+      await ctx.reply("Додайте посилання на Instagram / сайт / сторінку бізнесу, якщо це важливо для вашого кейсу.\n(Якщо ні — відправте пробіл або мінус)");
+    }
+    else if (session.state === "CASE_IG") {
+      sessionData.igHandle = text;
+      await prisma.botSession.update({
+        where: { telegramId },
+        data: { state: "CASE_LIVE", data: JSON.stringify(sessionData) }
+      });
+      const kb = new InlineKeyboard()
+        .text("Так", "live_yes")
+        .text("Ні", "live_no");
+      await ctx.reply("Чи готові ви вийти наживо під час CASE CLUB для розбору вашого кейсу?", { reply_markup: kb });
     }
   });
 
   bot.catch(async (err) => {
     console.error("Grammy error:", err);
-    try {
-      await err.ctx.reply(`Bot Error: ${err.message}`);
-    } catch (e) {}
   });
 };

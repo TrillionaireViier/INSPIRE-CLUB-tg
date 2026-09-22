@@ -48,12 +48,30 @@ model CaseSubmission {
   id               String           @id @default(uuid())
   userId           String
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  igHandle         String
-  currentSituation String
-  inquiry          String
+  
+  name             String?
+  profession       String?
+  direction        String?
+  currentSituation String?
+  previousAttempts String?
+  mainQuestion     String?
+  igHandle         String?
+  readyForLive     Boolean?         @default(false)
+
+  inquiry          String?
+  
   status           String           @default("PENDING")
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+}
+
+model BotSession {
+  id        String   @id @default(uuid())
+  telegramId BigInt  @unique
+  state     String
+  data      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PartnerPerk {
