@@ -53,7 +53,7 @@ export function HeroSection() {
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link
-            href="https://t.me/Aviva_Agency_WebsiteLeadsbot"
+            href="https://secure.wayforpay.com/sub/inspire"
             className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-fuchsia-600 border border-transparent rounded-full hover:bg-fuchsia-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-600 focus:ring-offset-black w-full sm:w-auto overflow-hidden"
           >
             <span className="relative z-10 flex items-center gap-2">
