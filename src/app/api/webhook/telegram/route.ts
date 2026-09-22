@@ -14,6 +14,6 @@ export async function POST(req: Request) {
     return handleUpdate(req);
   } catch (err: any) {
     console.error("Webhook error:", err);
-    return new Response("Webhook error", { status: 500 });
+    return new Response(`Webhook error: ${err?.message || err}`, { status: 500 });
   }
 }

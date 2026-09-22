@@ -115,4 +115,11 @@ export const setupBot = (bot: Bot) => {
       await ctx.reply(message, { parse_mode: "Markdown" });
     }
   });
+
+  bot.catch(async (err) => {
+    console.error("Grammy error:", err);
+    try {
+      await err.ctx.reply(`Bot Error: ${err.message}`);
+    } catch (e) {}
+  });
 };
