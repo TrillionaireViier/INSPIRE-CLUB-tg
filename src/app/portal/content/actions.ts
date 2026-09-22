@@ -3,28 +3,25 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function createLiveSession(formData: FormData) {
+export async function createContent(formData: FormData) {
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
-  const scheduledForStr = formData.get("scheduledFor") as string;
+  const type = formData.get("type") as string;
   const url = formData.get("url") as string;
 
-  if (!title || !scheduledForStr) {
+  if (!title || !type) {
     throw new Error("Missing required fields");
   }
-
-  const scheduledFor = new Date(scheduledForStr);
 
   await prisma.content.create({
     data: {
       title,
       description,
-      type: "LIVE_SESSION",
-      scheduledFor,
+      type,
       url,
       isActive: true,
     }
   });
 
-  revalidatePath("/admin/schedule");
+  revalidatePath("/portal/content");
 }

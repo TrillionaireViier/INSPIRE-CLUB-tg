@@ -15,7 +15,7 @@ export async function createPerk(prevState: any, formData: FormData) {
     data: { title, description, discountCode, url }
   })
 
-  revalidatePath('/admin/perks')
+  revalidatePath('/portal/perks')
   return { success: true }
 }
 
@@ -24,5 +24,5 @@ export async function togglePerk(id: string, isActive: boolean) {
     where: { id },
     data: { isActive }
   })
-  revalidatePath('/admin/perks')
+  revalidatePath('/portal/perks')
 }

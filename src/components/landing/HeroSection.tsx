@@ -62,7 +62,7 @@ export function HeroSection() {
             <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </Link>
           <Link
-            href="/admin"
+            href="/portal"
             className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-zinc-300 transition-all duration-200 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/20 focus:ring-offset-black backdrop-blur-sm w-full sm:w-auto"
           >
             Увійти
