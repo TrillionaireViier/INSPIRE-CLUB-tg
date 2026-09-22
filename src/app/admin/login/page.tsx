@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react'
 import { login } from './actions'
-import { ShieldAlert } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, null)
@@ -12,10 +12,10 @@ export default function LoginPage() {
       <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 w-full max-w-md">
         <div className="flex flex-col items-center justify-center mb-8">
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-            <ShieldAlert className="text-indigo-600 w-6 h-6" />
+            <Lock className="text-indigo-600 w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Вхід в адмін-панель</h1>
-          <p className="text-slate-500 mt-2 text-sm text-center">Будь ласка, введіть пароль адміністратора для продовження.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Авторизація</h1>
+          <p className="text-slate-500 mt-2 text-sm text-center">Будь ласка, введіть пароль для доступу.</p>
         </div>
 
         <form action={formAction} className="space-y-4">
