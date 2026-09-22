@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
-import { CallToAction } from "@/components/landing/CallToAction";
 import { CheckCircle2 } from "lucide-react";
 
 export default function Home() {
@@ -8,7 +7,6 @@ export default function Home() {
     <main className="min-h-screen bg-black">
       <HeroSection />
       <FeaturesGrid />
-      <CallToAction />
       
       {/* Telegram Bot Section */}
       <section className="py-20 px-6 bg-slate-950 border-y border-white/5">
