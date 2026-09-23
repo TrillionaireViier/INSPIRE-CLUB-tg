@@ -3,16 +3,21 @@
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-export async function createPerk(data: {
-  title: string
-  description: string
-  discountCode?: string
-  url?: string
-}) {
-  await prisma.partnerPerk.create({
-    data: { ...data, isActive: true }
-  })
-  revalidatePath('/user/perks')
+export async function createPerk(prevState: any, formData: FormData) {
+  const title = formData.get('title') as string
+  const description = formData.get('description') as string
+  const discountCode = (formData.get('discountCode') as string) || undefined
+  const url = (formData.get('url') as string) || undefined
+
+  try {
+    await prisma.partnerPerk.create({
+      data: { title, description, discountCode, url, isActive: true }
+    })
+    revalidatePath('/user/perks')
+    return { success: true }
+  } catch (e) {
+    return { error: 'Failed to create perk' }
+  }
 }
 
 export async function deletePerk(id: string) {
