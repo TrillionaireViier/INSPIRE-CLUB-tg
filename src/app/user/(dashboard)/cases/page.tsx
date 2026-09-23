@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import { StatusButton } from "./StatusButton";
+import { DeleteCaseButton } from "./DeleteCaseButton";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +35,9 @@ export default async function CasesPage() {
                     Submitted by {caseItem.user.firstName} {caseItem.user.lastName} on {format(new Date(caseItem.createdAt), "MMM d, yyyy")}
                   </p>
                 </div>
-                <div>
+                <div className="flex items-center gap-2">
                   <StatusButton id={caseItem.id} currentStatus={caseItem.status} />
+                  <DeleteCaseButton id={caseItem.id} />
                 </div>
               </div>
               

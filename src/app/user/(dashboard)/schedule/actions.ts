@@ -28,3 +28,16 @@ export async function createLiveSession(formData: FormData) {
 
   revalidatePath("/user/schedule");
 }
+
+export async function deleteSchedule(id: string) {
+  try {
+    await prisma.content.delete({
+      where: { id }
+    })
+    revalidatePath("/user/schedule")
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to delete schedule:", error)
+    return { error: "Failed to delete schedule" }
+  }
+}

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Video, FileText, Plus } from "lucide-react";
 import { AddContentForm } from "./AddContentForm";
+import { DeleteContentButton } from "./DeleteContentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,9 @@ export default async function ContentLibraryPage() {
                   <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
                     {item.isActive ? "Active" : "Hidden"}
                   </span>
+                  <div className="mt-2 flex justify-end">
+                    <DeleteContentButton id={item.id} />
+                  </div>
                 </div>
               </div>
             ))

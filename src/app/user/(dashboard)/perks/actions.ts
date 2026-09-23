@@ -21,10 +21,16 @@ export async function createPerk(prevState: any, formData: FormData) {
 }
 
 export async function deletePerk(id: string) {
-  await prisma.partnerPerk.delete({
-    where: { id }
-  })
-  revalidatePath('/user/perks')
+  try {
+    await prisma.partnerPerk.delete({
+      where: { id }
+    })
+    revalidatePath('/user/perks')
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to delete perk:", error)
+    return { error: 'Failed to delete perk' }
+  }
 }
 
 export async function togglePerk(id: string, isActive: boolean) {

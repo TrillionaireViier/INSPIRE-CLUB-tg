@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Calendar, Video, Clock } from "lucide-react";
 import { AddScheduleForm } from "./AddScheduleForm";
+import { DeleteScheduleButton } from "./DeleteScheduleButton";
 import { format } from "date-fns";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +52,9 @@ export default async function SchedulePage() {
                       Join Stream URL &rarr;
                     </a>
                   )}
+                  <div className="mt-2 flex justify-end">
+                    <DeleteScheduleButton id={session.id} />
+                  </div>
                 </div>
               </div>
             ))

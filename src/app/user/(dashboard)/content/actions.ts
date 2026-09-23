@@ -25,3 +25,16 @@ export async function createContent(formData: FormData) {
 
   revalidatePath("/user/content");
 }
+
+export async function deleteContent(id: string) {
+  try {
+    await prisma.content.delete({
+      where: { id }
+    })
+    revalidatePath("/user/content")
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to delete content:", error)
+    return { error: "Failed to delete content" }
+  }
+}

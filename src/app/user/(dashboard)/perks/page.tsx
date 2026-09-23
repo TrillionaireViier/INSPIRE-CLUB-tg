@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { Tag } from "lucide-react";
 import { AddPerkForm } from "./AddPerkForm";
 import { TogglePerkButton } from "./TogglePerkButton";
+import { DeletePerkButton } from "./DeletePerkButton";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,10 @@ export default async function PerksPage() {
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <h3 className="font-bold text-slate-900 text-lg">{perk.title}</h3>
-                    <TogglePerkButton id={perk.id} isActive={perk.isActive} />
+                    <div className="flex items-center gap-2">
+                      <TogglePerkButton id={perk.id} isActive={perk.isActive} />
+                      <DeletePerkButton id={perk.id} />
+                    </div>
                   </div>
                   <p className="text-sm text-slate-500 mt-1">{perk.description}</p>
                   

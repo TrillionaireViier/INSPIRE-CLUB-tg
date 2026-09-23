@@ -10,3 +10,16 @@ export async function updateCaseStatus(id: string, status: string) {
   })
   revalidatePath('/user/cases')
 }
+
+export async function deleteCase(id: string) {
+  try {
+    await prisma.caseSubmission.delete({
+      where: { id }
+    })
+    revalidatePath('/user/cases')
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to delete case:", error)
+    return { error: 'Failed to delete case' }
+  }
+}

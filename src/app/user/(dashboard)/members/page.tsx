@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
+import { DeleteMemberButton } from "./DeleteMemberButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +28,13 @@ export default async function MembersPage() {
                 <th className="px-6 py-4 font-semibold">Telegram ID</th>
                 <th className="px-6 py-4 font-semibold">Joined Date</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
                     No members found.
                   </td>
                 </tr>
@@ -57,6 +59,9 @@ export default async function MembersPage() {
                       }`}>
                         {user.subscription?.status || "NO_SUB"}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <DeleteMemberButton id={user.id} />
                     </td>
                   </tr>
                 ))
