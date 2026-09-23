@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LayoutDashboard, Users, Calendar, Video, ShieldCheck, CreditCard, Menu, LogOut } from "lucide-react";
-import { logout } from "./login/actions";
+import { logout } from "../login/actions";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
