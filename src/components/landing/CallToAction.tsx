@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export function CallToAction() {
@@ -27,11 +27,11 @@ export function CallToAction() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
-              href="https://t.me/Aviva_Agency_WebsiteLeadsbot"
+              href="https://secure.wayforpay.com/sub/inspire"
               className="group flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-bold text-black shadow-sm hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors w-full sm:w-auto"
             >
-              <MessageCircle className="w-5 h-5 text-fuchsia-600" />
-              Підключитися через Telegram
+              Приєднатися до клубу
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>
