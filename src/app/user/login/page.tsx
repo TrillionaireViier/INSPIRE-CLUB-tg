@@ -47,6 +47,18 @@ export default function LoginPage() {
             {isPending ? 'Авторизація...' : 'Увійти'}
           </button>
         </form>
+
+        <div className="mt-6 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
+          <p>Ще не з нами?</p>
+          <a 
+            href="https://t.me/insidebyinspire_bot" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors mt-1 inline-block"
+          >
+            Приєднатися до клубу @insidebyinspire_bot
+          </a>
+        </div>
       </div>
     </div>
   )
