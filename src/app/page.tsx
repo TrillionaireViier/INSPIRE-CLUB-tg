@@ -25,7 +25,7 @@ export default function Home() {
           </p>
           
           <a
-            href="https://secure.wayforpay.com/sub/inspire"
+            href="https://t.me/insidebyinspire_bot"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-fuchsia-600/20 hover:shadow-fuchsia-600/40 text-lg"
@@ -43,8 +43,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-black py-8 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center text-sm text-zinc-500">
-          &copy; {new Date().getFullYear()} INSPIRE CLUB. Всі права захищені.
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center text-sm text-zinc-500 flex flex-col gap-2">
+          <span>&copy; {new Date().getFullYear()} INSPIRE CLUB. Всі права захищені.</span>
+          <a href="https://t.me/insidebyinspire_bot" target="_blank" rel="noreferrer" className="hover:text-zinc-300 transition-colors">
+            @insidebyinspire_bot
+          </a>
         </div>
       </footer>
     </main>
