@@ -12,33 +12,30 @@ export const getBot = () => {
   return new Bot(token);
 };
 
-export const setupBot = (bot: Bot) => {
-  bot.command("start", async (ctx) => {
-    if (ctx.from) {
-      await prisma.user.upsert({
+async function showMainMenu(ctx: any) {
+  if (ctx.from) {
+    try {
+      await prisma.user.update({
         where: { telegramId: ctx.from.id },
-        update: {
-          username: ctx.from.username,
-          firstName: ctx.from.first_name,
-          lastName: ctx.from.last_name,
-        },
-        create: {
-          telegramId: ctx.from.id,
+        data: {
           username: ctx.from.username,
           firstName: ctx.from.first_name,
           lastName: ctx.from.last_name,
         }
       });
+    } catch (e) {
+      // User might not exist if they somehow bypassed, but let's just ignore
     }
+  }
 
-    const keyboard = new InlineKeyboard()
-      .text("📅 Живі ефіри", "live_sessions").row()
-      .text("📚 Бібліотека контенту", "content_library").row()
-      .text("💎 Партнери та знижки", "perks").row()
-      .text("🎯 ПОДАТИ КЕЙС", "case_club").row()
-      .text("⚙️ Моя підписка", "subscription");
+  const keyboard = new InlineKeyboard()
+    .text("📅 Живі ефіри", "live_sessions").row()
+    .text("📚 Бібліотека контенту", "content_library").row()
+    .text("💎 Партнери та знижки", "perks").row()
+    .text("🎯 ПОДАТИ КЕЙС", "case_club").row()
+    .text("⚙️ Моя підписка", "subscription");
 
-    const welcomeText = `Вітаємо в INSIDE CLUB by INSPIRE 🤍
+  const welcomeText = `Вітаємо в INSIDE CLUB by INSPIRE 🤍
 
 Ти всередині простору, створеного для творців сфери краси.
 
@@ -80,7 +77,25 @@ INSIDE - це місце, де можна знайти потрібних люд
 
 Оберіть дію в меню нижче:`;
 
-    await ctx.reply(welcomeText, { reply_markup: keyboard, parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
+  await ctx.reply(welcomeText, { reply_markup: keyboard, parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
+}
+
+export const setupBot = (bot: Bot) => {
+  bot.command("start", async (ctx) => {
+    if (!ctx.from) return;
+    
+    const user = await prisma.user.findUnique({ where: { telegramId: ctx.from.id } });
+    
+    if (!user) {
+      await prisma.botSession.upsert({
+        where: { telegramId: ctx.from.id },
+        update: { state: "AWAITING_PROMO", data: "{}" },
+        create: { telegramId: ctx.from.id, state: "AWAITING_PROMO", data: "{}" }
+      });
+      return ctx.reply("🔒 Для входу в клуб введіть спеціальний **промокод**:", { parse_mode: "Markdown" });
+    }
+
+    await showMainMenu(ctx);
   });
 
   bot.on("callback_query:data", async (ctx) => {
@@ -249,10 +264,29 @@ INSIDE - це місце, де можна знайти потрібних люд
     
     if (!session) return; // ignore if no session
     
-    const text = ctx.message.text;
+    const text = ctx.message.text || "";
     const sessionData = JSON.parse(session.data);
     
-    if (session.state === "CASE_NAME") {
+    if (session.state === "AWAITING_PROMO") {
+      const expectedPromo = process.env.BOT_PROMO_CODE || "INSIDE2026"; // Default promo code
+      
+      if (text.trim().toUpperCase() === expectedPromo.toUpperCase()) {
+        await prisma.user.create({
+          data: {
+            telegramId: ctx.from.id,
+            username: ctx.from.username,
+            firstName: ctx.from.first_name,
+            lastName: ctx.from.last_name,
+          }
+        });
+        await prisma.botSession.delete({ where: { telegramId } });
+        await ctx.reply("✅ Промокод прийнято!");
+        return showMainMenu(ctx);
+      } else {
+        return ctx.reply("❌ Невірний промокод. Спробуйте ще раз:");
+      }
+    }
+    else if (session.state === "CASE_NAME") {
       sessionData.name = text;
       await prisma.botSession.update({
         where: { telegramId },
