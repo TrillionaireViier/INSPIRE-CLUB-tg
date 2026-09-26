@@ -84,3 +84,25 @@ model PartnerPerk {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Promocode {
+  id               String   @id @default(uuid())
+  code             String   @unique
+  discount         Int
+  isActive         Boolean  @default(true)
+  usedByTelegramId BigInt?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Broadcast {
+  id          String   @id @default(uuid())
+  title       String
+  message     String
+  targetGroup String   @default("ALL") // ALL, ACTIVE, GUEST
+  status      String   @default("DRAFT") // DRAFT, SENT
+  sentCount   Int      @default(0)
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

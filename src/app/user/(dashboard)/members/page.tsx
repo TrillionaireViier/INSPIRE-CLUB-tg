@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
-import { format } from "date-fns";
-import { DeleteMemberButton } from "./DeleteMemberButton";
+import { MemberRow } from "./MemberRow";
 
 export const dynamic = "force-dynamic";
 
@@ -40,30 +39,7 @@ export default async function MembersPage() {
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-slate-900">{user.firstName} {user.lastName}</div>
-                      {user.username && <div className="text-slate-500">@{user.username}</div>}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 font-mono text-xs">
-                      {user.telegramId.toString()}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600">
-                      {format(new Date(user.createdAt), "MMM d, yyyy")}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full font-medium text-xs ${
-                        user.subscription?.status === "ACTIVE" 
-                          ? "bg-emerald-100 text-emerald-700" 
-                          : "bg-slate-100 text-slate-600"
-                      }`}>
-                        {user.subscription?.status || "NO_SUB"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <DeleteMemberButton id={user.id} />
-                    </td>
-                  </tr>
+                  <MemberRow key={user.id} user={user} />
                 ))
               )}
             </tbody>

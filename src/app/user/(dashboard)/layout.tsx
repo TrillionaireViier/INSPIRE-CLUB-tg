@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, Calendar, Video, ShieldCheck, CreditCard, Menu, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, Video, ShieldCheck, CreditCard, Menu, LogOut, Ticket, Send } from "lucide-react";
 import { logout } from "../login/actions";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -21,6 +21,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <NavItem href="/user/content" icon={<Video size={20} />} label="Бібліотека контенту" />
           <NavItem href="/user/cases" icon={<ShieldCheck size={20} />} label="Заявки на розбір" />
           <NavItem href="/user/perks" icon={<CreditCard size={20} />} label="Бонуси від партнерів" />
+          <NavItem href="/user/promocodes" icon={<Ticket size={20} />} label="Промокоди" />
+          <NavItem href="/user/broadcasts" icon={<Send size={20} />} label="Розсилки" />
         </nav>
       </aside>
 

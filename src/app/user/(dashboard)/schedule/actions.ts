@@ -41,3 +41,28 @@ export async function deleteSchedule(id: string) {
     return { error: "Failed to delete schedule" }
   }
 }
+
+export async function updateLiveSession(id: string, formData: FormData) {
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const scheduledForStr = formData.get("scheduledFor") as string;
+  const url = formData.get("url") as string;
+
+  if (!title || !scheduledForStr) {
+    throw new Error("Missing required fields");
+  }
+
+  const scheduledFor = new Date(scheduledForStr);
+
+  await prisma.content.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      scheduledFor,
+      url,
+    }
+  });
+
+  revalidatePath("/user/schedule");
+}

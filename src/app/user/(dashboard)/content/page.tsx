@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Video, FileText, Plus } from "lucide-react";
 import { AddContentForm } from "./AddContentForm";
-import { DeleteContentButton } from "./DeleteContentButton";
+import { ContentCard } from "./ContentCard";
 
 export const dynamic = "force-dynamic";
 
@@ -33,32 +33,7 @@ export default async function ContentLibraryPage() {
             </div>
           ) : (
             content.map((item) => (
-              <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  {item.type === "VIDEO_RECORDING" ? (
-                    <Video className="text-indigo-600" />
-                  ) : (
-                    <FileText className="text-rose-600" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-slate-900">{item.title}</h3>
-                  <p className="text-sm text-slate-500 mt-1">{item.description}</p>
-                  {item.url && (
-                    <a href={item.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-600 hover:underline mt-2 inline-block">
-                      View Resource &rarr;
-                    </a>
-                  )}
-                </div>
-                <div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
-                    {item.isActive ? "Active" : "Hidden"}
-                  </span>
-                  <div className="mt-2 flex justify-end">
-                    <DeleteContentButton id={item.id} />
-                  </div>
-                </div>
-              </div>
+              <ContentCard key={item.id} item={item} />
             ))
           )}
         </div>

@@ -2,7 +2,7 @@ import { Bot, webhookCallback, InlineKeyboard } from "grammy";
 import prisma from "./prisma";
 import { format } from "date-fns";
 
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN || "8744514192:AAEFv7hCfy6evbjIS3ZfEPiluy7-DIwOdlY";
 const ADMIN_ID = 569302636; // We'll need a way to notify admin. I will use a fallback or the first admin user. Actually, better to query the first user with role ADMIN.
 
 export const getBot = () => {
@@ -35,9 +35,7 @@ async function showMainMenu(ctx: any) {
     .text("🎯 ПОДАТИ КЕЙС", "case_club").row()
     .text("⚙️ Моя підписка", "subscription");
 
-  const welcomeText = `Вітаємо в INSIDE CLUB by INSPIRE 🤍
-
-Ти всередині простору, створеного для творців сфери краси.
+  const welcomeText = `Ти всередині простору, створеного для творців сфери краси.
 
 Тут ми зібрали знання, досвід, сильне оточення та можливості, які допомагають не просто ставати кращим у своїй професії , а рости у доході, масштабі та власному рівні.
 
@@ -48,54 +46,65 @@ INSIDE - це місце, де можна знайти потрібних люд
 
 Ти вже INSIDE.
 
-Твій професійний LEVEL ↑
+Твій професійний LEVEL ↑`;
 
-🍂 **INSIDE CLUB by Inspire — ЖОВТЕНЬ**
-
-**06.10 | Катерина Ральник**
-КОМАНДА ЗАРОБЛЯЄ. А САЛОН?
-Як сформувати ставку, %, бонуси та KPI майстрів так, щоб мотивувати команду, але не залишати салон без прибутку.
-
-**13.10 | INSIDE РОЗБІР**
-ТВІЙ ЗАПИТ — НАШ РОЗБІР
-Живий розбір реальних запитів учасників клубу: бізнес, команда, клієнти, продажі, розвиток.
-
-**20.10 | INSIDE NETWORKING**
-ЗНАЙОМСТВА, ЯКІ МОЖУТЬ СТАТИ МОЖЛИВОСТЯМИ
-Жива зустріч комʼюніті: знайомимось, шукаємо партнерства.
-
-**27.10 | Юлія Паламар**
-ВІД АНАТОМІЇ ДО ФОРМИ
-Як будувати форму стрижки відповідно до анатомічних особливостей.
-
----
-💻 **Урок по роботі в CRM Integrica**
-Показуємо не теорію, а реальні інструменти та функції, які справді допомагають у роботі салону (повернення клієнтів, аналітика, зарплати, розсилки, автоматизації).
-
-🎥 Дивитись урок: https://youtu.be/mMraBHIY_-Q?si=U8r2J82lxqocTdM4
-✨ Промокод «Ralnyk» на -50% оплати ліцензії
-
-Оберіть дію в меню нижче:`;
-
-  await ctx.reply(welcomeText, { reply_markup: keyboard, parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
+  await ctx.reply(welcomeText, { reply_markup: keyboard, parse_mode: "HTML", link_preview_options: { is_disabled: true } });
 }
 
 export const setupBot = (bot: Bot) => {
   bot.command("start", async (ctx) => {
     if (!ctx.from) return;
     
-    const user = await prisma.user.findUnique({ where: { telegramId: ctx.from.id } });
+    let user = await prisma.user.findUnique({ where: { telegramId: ctx.from.id } });
     
     if (!user) {
+      user = await prisma.user.create({
+        data: {
+          telegramId: ctx.from.id,
+          username: ctx.from.username,
+          firstName: ctx.from.first_name,
+          lastName: ctx.from.last_name,
+          subscription: {
+            create: {
+              status: "GUEST"
+            }
+          }
+        }
+      });
+      
       await prisma.botSession.upsert({
         where: { telegramId: ctx.from.id },
         update: { state: "AWAITING_PROMO", data: "{}" },
         create: { telegramId: ctx.from.id, state: "AWAITING_PROMO", data: "{}" }
       });
-      return ctx.reply("🔒 Для входу в клуб введіть спеціальний **промокод**:", { parse_mode: "Markdown" });
+      return ctx.reply("🔒 Для входу в клуб введіть спеціальний <b>промокод</b>:", { parse_mode: "HTML" });
+    }
+
+    const sub = await prisma.subscription.findUnique({ where: { userId: user.id } });
+    if (sub?.status === "GUEST") {
+      await prisma.botSession.upsert({
+        where: { telegramId: ctx.from.id },
+        update: { state: "AWAITING_PROMO", data: "{}" },
+        create: { telegramId: ctx.from.id, state: "AWAITING_PROMO", data: "{}" }
+      });
+      return ctx.reply("🔒 Для входу в клуб введіть спеціальний <b>промокод</b>:", { parse_mode: "HTML" });
     }
 
     await showMainMenu(ctx);
+  });
+
+  bot.command("reset", async (ctx) => {
+    if (!ctx.from) return;
+    
+    // Release any used promocode back to active status
+    await prisma.promocode.updateMany({
+      where: { usedByTelegramId: ctx.from.id },
+      data: { isActive: true, usedByTelegramId: null }
+    });
+    
+    await prisma.user.deleteMany({ where: { telegramId: ctx.from.id } });
+    await prisma.botSession.deleteMany({ where: { telegramId: ctx.from.id } });
+    return ctx.reply("Ваш профіль видалено з бази, а промокод знову активний. Натисніть /start щоб пройти реєстрацію заново.");
   });
 
   bot.on("callback_query:data", async (ctx) => {
@@ -110,27 +119,38 @@ export const setupBot = (bot: Bot) => {
 
     if (data === "live_sessions") {
       await ctx.answerCallbackQuery();
+      
       const sessions = await prisma.content.findMany({
         where: { type: "LIVE_SESSION", isActive: true },
-        orderBy: { scheduledFor: "asc" },
-        take: 5
+        orderBy: { scheduledFor: "asc" }
       });
-      if (sessions.length === 0) return ctx.reply("Наразі немає запланованих живих ефірів.");
-      
-      let message = "📅 **Заплановані ефіри**\n\n";
-      for (const session of sessions) {
-        const dateStr = session.scheduledFor ? format(session.scheduledFor, "MMM d, yyyy h:mm a") : "TBA";
-        message += `🔹 *${session.title}*\n⏰ ${dateStr}\n`;
-        if (session.description) message += `${session.description}\n`;
-        if (isSubscribed && session.url) message += `🔗 [Приєднатись до трансляції](${session.url})\n`;
-        else if (!isSubscribed) message += `🔒 *Посилання на трансляцію приховано для непідписаних*\n`;
-        message += "\n";
+
+      if (sessions.length === 0) {
+        return ctx.reply("📅 Наразі немає запланованих живих ефірів. Слідкуйте за анонсами!");
       }
-      await ctx.reply(message, { parse_mode: "Markdown" });
-    } 
+
+      let message = `📅 <b>Розклад трансляцій</b>\n\n`;
+      
+      for (const session of sessions) {
+        const dateStr = session.scheduledFor 
+          ? new Date(session.scheduledFor).toLocaleDateString("uk-UA", { day: "2-digit", month: "2-digit" })
+          : "";
+        
+        message += `<b>${dateStr ? dateStr + ' | ' : ''}${session.title}</b>\n`;
+        if (session.description) {
+          message += `${session.description}\n`;
+        }
+        if (session.url) {
+          message += `🔗 <a href="${session.url}">Приєднатися до ефіру</a>\n`;
+        }
+        message += `\n`;
+      }
+      
+      await ctx.reply(message, { parse_mode: "HTML" });
+    }
     else if (data === "content_library") {
       await ctx.answerCallbackQuery();
-      if (!isSubscribed) return ctx.reply("📚 **Бібліотека контенту**\n\n🔒 Цей розділ закрито. Будь ласка, придбайте підписку, щоб розблокувати минулі майстер-класи та PDF-матеріали.", { parse_mode: "Markdown" });
+      if (!user) return ctx.reply("📚 <b>Бібліотека контенту</b>\n\n🔒 Цей розділ закрито. Будь ласка, введіть промокод для доступу.", { parse_mode: "HTML" });
       
       const content = await prisma.content.findMany({
         where: { type: { in: ["VIDEO_RECORDING", "PDF_MATERIAL"] }, isActive: true },
@@ -139,14 +159,42 @@ export const setupBot = (bot: Bot) => {
       });
       if (content.length === 0) return ctx.reply("Бібліотека наразі порожня.");
       
-      let message = "📚 **Бібліотека контенту**\n\n";
+      let message = "📚 <b>Бібліотека контенту</b>\n\n";
       for (const item of content) {
         const icon = item.type === "VIDEO_RECORDING" ? "🎥" : "📄";
-        message += `${icon} *${item.title}*\n`;
-        if (item.url) message += `🔗 [Відкрити матеріал](${item.url})\n`;
-        message += "\n";
+        message += `${icon} <b>${item.title}</b>\n`;
+        if (item.description) {
+          message += `\n<i>${item.description}</i>\n`;
+        }
+        if (item.url) message += `\n🔗 <a href="${item.url}">Відкрити матеріал</a>\n`;
+        message += "\n〰️〰️〰️〰️〰️〰️〰️〰️〰️\n\n";
       }
-      await ctx.reply(message, { parse_mode: "Markdown" });
+      await ctx.reply(message, { parse_mode: "HTML" });
+    }
+    // PERKS / PARTNER DISCOUNTS
+    else if (data === "perks") {
+      await ctx.answerCallbackQuery();
+
+      const activePerks = await prisma.partnerPerk.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: "desc" }
+      });
+
+      if (activePerks.length === 0) {
+        const msg = `💎 <b>Знижки від партнерів</b>\n\nЗараз ми готуємо для вас ексклюзивні пропозиції від топових брендів. Прямо зараз активних промокодів немає, але нова хвиля потужних знижок уже на підході!\n\nЩойно партнерські бонуси стануть доступними — ви одразу отримаєте персональне повідомлення із деталями та промокодами. Слідкуйте за повідомленнями. 🙌`;
+        return ctx.reply(msg, { parse_mode: "HTML" });
+      }
+
+      let message = "💎 <b>Знижки від партнерів</b>\n\n";
+      for (const perk of activePerks) {
+        message += `🎁 <b>${perk.brand}</b>\n`;
+        if (perk.description) message += `${perk.description}\n`;
+        if (perk.promoCode) message += `\n🏷 Промокод: <code>${perk.promoCode}</code>\n`;
+        if (perk.discount) message += `💸 Знижка: ${perk.discount}\n`;
+        if (perk.link) message += `🔗 <a href="${perk.link}">Перейти до пропозиції</a>\n`;
+        message += "\n〰️〰️〰️〰️〰️〰️〰️〰️〰️\n\n";
+      }
+      await ctx.reply(message, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
     }
     // CASE CLUB FLOW
     else if (data === "case_club") {
@@ -157,7 +205,7 @@ export const setupBot = (bot: Bot) => {
         update: { state: "CASE_NAME", data: "{}" },
         create: { telegramId, state: "CASE_NAME", data: "{}" }
       });
-      await ctx.reply("Чудово! Давайте заповнимо анкету для CASE CLUB.\n\nВведіть ваше **Імʼя та прізвище:**", { parse_mode: "Markdown" });
+      await ctx.reply("Для CASE CLUB 13 жовтня заявки приймаємо до 10 жовтня включно.\n\nЧудово! Давайте заповнимо анкету для CASE CLUB.\n\nВведіть ваше <b>Імʼя та прізвище:</b>", { parse_mode: "HTML" });
     }
     else if (data.startsWith("prof_")) {
       await ctx.answerCallbackQuery();
@@ -237,19 +285,27 @@ export const setupBot = (bot: Bot) => {
         await ctx.reply("Твій кейс прийнято 🤍\nМи переглянемо всі заявки та оберемо кейси для наступного CASE CLUB. Якщо твій кейс буде обрано — ми повідомимо тебе окремо.");
 
         // Notify Admin
-        const adminUser = await prisma.user.findFirst({ where: { role: "ADMIN" } });
-        if (adminUser) {
-          const adminMsg = `🔥 Нова заявка на CASE CLUB!\n\n` +
-            `Від: ${sessionData.name}\n` +
-            `Професія: ${sessionData.profession}\n` +
-            `Напрям: ${sessionData.direction}\n\n` +
-            `Ситуація: ${sessionData.currentSituation}\n\n` +
-            `Що пробували: ${sessionData.previousAttempts}\n\n` +
-            `Питання: ${sessionData.mainQuestion}\n\n` +
-            `Посилання: ${sessionData.igHandle}\n` +
-            `Готові наживо: ${readyForLive ? "Так" : "Ні"}`;
+        const adminMsg = `🔥 Нова заявка на CASE CLUB!\n\n` +
+          `Від: ${sessionData.name}\n` +
+          `Професія: ${sessionData.profession}\n` +
+          `Напрям: ${sessionData.direction}\n\n` +
+          `Ситуація: ${sessionData.currentSituation}\n\n` +
+          `Що пробували: ${sessionData.previousAttempts}\n\n` +
+          `Питання: ${sessionData.mainQuestion}\n\n` +
+          `Посилання: ${sessionData.igHandle}\n` +
+          `Готові наживо: ${readyForLive ? "Так" : "Ні"}`;
+          
+        const adminIds = ["390375809"]; // Hardcoded user ID
+        const adminUsers = await prisma.user.findMany({ where: { role: "ADMIN" } });
+        for (const u of adminUsers) {
+          if (!adminIds.includes(u.telegramId.toString())) {
+            adminIds.push(u.telegramId.toString());
+          }
+        }
+        
+        for (const id of adminIds) {
           try {
-            await ctx.api.sendMessage(adminUser.telegramId.toString(), adminMsg);
+            await ctx.api.sendMessage(id, adminMsg);
           } catch (e) {
             console.error("Failed to notify admin", e);
           }
@@ -268,22 +324,28 @@ export const setupBot = (bot: Bot) => {
     const sessionData = JSON.parse(session.data);
     
     if (session.state === "AWAITING_PROMO") {
-      const expectedPromo = process.env.BOT_PROMO_CODE || "INSIDE2026"; // Default promo code
+      const codeInput = text.trim().toUpperCase();
+      const validPromo = await prisma.promocode.findUnique({
+        where: { code: codeInput }
+      });
       
-      if (text.trim().toUpperCase() === expectedPromo.toUpperCase()) {
-        await prisma.user.create({
-          data: {
-            telegramId: ctx.from.id,
-            username: ctx.from.username,
-            firstName: ctx.from.first_name,
-            lastName: ctx.from.last_name,
-          }
+      if (validPromo && validPromo.isActive) {
+        const user = await prisma.user.findUnique({ where: { telegramId: ctx.from.id } });
+        if (user) {
+          await prisma.subscription.update({
+            where: { userId: user.id },
+            data: { status: "ACTIVE" }
+          });
+        }
+        await prisma.promocode.update({
+          where: { id: validPromo.id },
+          data: { isActive: false, usedByTelegramId: ctx.from.id }
         });
         await prisma.botSession.delete({ where: { telegramId } });
-        await ctx.reply("✅ Промокод прийнято!");
+        await ctx.reply("✅ Промокод прийнято! Вітаємо в клубі.");
         return showMainMenu(ctx);
       } else {
-        return ctx.reply("❌ Невірний промокод. Спробуйте ще раз:");
+        return ctx.reply("❌ Невірний або неактивний промокод. Спробуйте ще раз:");
       }
     }
     else if (session.state === "CASE_NAME") {

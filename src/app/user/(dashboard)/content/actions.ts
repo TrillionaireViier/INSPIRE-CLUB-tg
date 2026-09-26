@@ -38,3 +38,28 @@ export async function deleteContent(id: string) {
     return { error: "Failed to delete content" }
   }
 }
+
+export async function updateContentItem(id: string, formData: FormData) {
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const type = formData.get("type") as string;
+  const url = formData.get("url") as string;
+  const isActive = formData.get("isActive") === "on";
+
+  if (!title || !type) {
+    throw new Error("Missing required fields");
+  }
+
+  await prisma.content.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      type,
+      url,
+      isActive
+    }
+  });
+
+  revalidatePath("/user/content");
+}

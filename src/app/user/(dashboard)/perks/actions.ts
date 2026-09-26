@@ -40,3 +40,26 @@ export async function togglePerk(id: string, isActive: boolean) {
   })
   revalidatePath('/user/perks')
 }
+
+export async function updatePerk(id: string, formData: FormData) {
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const discountCode = formData.get("discountCode") as string;
+  const url = formData.get("url") as string;
+
+  if (!title) {
+    throw new Error("Missing title field");
+  }
+
+  await prisma.partnerPerk.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      discountCode: discountCode || null,
+      url: url || null,
+    }
+  });
+
+  revalidatePath("/user/perks");
+}

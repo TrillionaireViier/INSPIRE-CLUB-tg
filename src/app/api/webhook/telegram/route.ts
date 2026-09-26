@@ -11,7 +11,8 @@ export async function POST(req: Request) {
     // grammy provides a standard web-standard compatible callback
     const handleUpdate = webhookCallback(bot, "std/http");
     
-    return handleUpdate(req);
+    const response = await handleUpdate(req);
+    return response;
   } catch (err: any) {
     console.error("Webhook error:", err);
     return new Response(`Webhook error: ${err?.message || err}`, { status: 500 });

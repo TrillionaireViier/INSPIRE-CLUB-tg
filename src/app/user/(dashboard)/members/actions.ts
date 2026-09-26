@@ -15,3 +15,12 @@ export async function deleteMember(id: string) {
     return { error: 'Failed to delete member' }
   }
 }
+
+export async function updateMemberSubscription(userId: string, status: string) {
+  await prisma.subscription.upsert({
+    where: { userId },
+    update: { status },
+    create: { userId, status }
+  });
+  revalidatePath('/user/members');
+}
